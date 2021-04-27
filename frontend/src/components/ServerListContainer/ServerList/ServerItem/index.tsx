@@ -1,14 +1,16 @@
 import React from 'react';
 import dropdownIcon from '../../../../assets/dropdown.svg';
 import crossIcon from '../../../../assets/cross.svg';
+import Dropdown from '../../../Dropdown';
 
 type Props = {
   name: string;
   status: 'ONLINE' | 'OFFLINE' | 'REBOOTING';
+  statusChanged: (event: { target: HTMLInputElement }) => void;
 };
 
-const ServerItem: React.FC<Props> = ({ name, status }) => {
-  let statusText;
+const ServerItem: React.FC<Props> = ({ name, status, statusChanged }) => {
+  let statusText, dropdownElementConfig;
   switch (status) {
     case 'ONLINE':
       statusText = (
@@ -17,6 +19,10 @@ const ServerItem: React.FC<Props> = ({ name, status }) => {
           {status}
         </div>
       );
+      dropdownElementConfig = [
+        { value: status, displayValue: 'Turn off', disabled: false },
+        { value: status, displayValue: 'Reboot', disabled: false },
+      ];
       break;
     case 'OFFLINE':
       statusText = (
@@ -25,12 +31,26 @@ const ServerItem: React.FC<Props> = ({ name, status }) => {
           {status}
         </div>
       );
+      dropdownElementConfig = [
+        { value: status, displayValue: 'Turn on', disabled: false },
+        { value: status, displayValue: 'Reboot', disabled: true },
+      ];
       break;
     case 'REBOOTING':
       statusText = `${status}...`;
+      dropdownElementConfig = [
+        { value: status, displayValue: 'Turn off', disabled: false },
+        { value: status, displayValue: 'Reboot', disabled: true },
+      ];
       break;
     default:
+      statusText = `${status}...`;
+      dropdownElementConfig = [
+        { value: status, displayValue: 'Turn off', disabled: false },
+        { value: status, displayValue: 'Reboot', disabled: true },
+      ];
   }
+
   return (
     <ul className='server-list__item'>
       <li>{name}</li>
@@ -41,7 +61,12 @@ const ServerItem: React.FC<Props> = ({ name, status }) => {
           {statusText}
         </li>
         <li>
-          <img src={dropdownIcon} alt='dropdown' />
+          <Dropdown
+            elementConfig={dropdownElementConfig}
+            changed={(event) => statusChanged(event)}
+          >
+            <img src={dropdownIcon} alt='dropdown' />
+          </Dropdown>
         </li>
       </div>
     </ul>
